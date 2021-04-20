@@ -7,4 +7,6 @@
 !*.CPP
 !.gitignore
 !*.md
+!*.exe
+
 
