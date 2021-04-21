@@ -88,7 +88,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cfi.dwFontSize.Y = 24;                  // Height
 	cfi.FontFamily = FF_DONTCARE;
 	cfi.FontWeight = FW_NORMAL;
-	std::wcscpy(cfi.FaceName, L"Consolas"); // Choose your font
+	//std::wcscpy(cfi.FaceName, L"Consolas"); // Choose your font
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 
 	//std::cout << "Font: Consolas, Size: 24\n";
@@ -138,10 +138,18 @@ int _tmain(int argc, _TCHAR* argv[])
 			y = rand()%18 + 1;
 			SetXY(x, y);
 			rnd = rand() + rnX + rnY;
-			symb = rnd % (128 - 48) + 48;
-			txtColor = (rnd & 7) | 8;
+			symb = rnd % (127 - 48) + 48;
+			
 			bkColor = (symb & 7) ;//txtColor ^ 0xf;
-			SetTextColor(txtColor |  (rnd & 0x70));//(bkColor << 8));		
+			txtColor = (rnd & 6);// | 8;
+			if (txtColor == bkColor)
+			{
+				txtColor = 0xf;
+				bkColor = 0;
+			}
+			else
+				txtColor |= 8;
+			SetTextColor(txtColor |  (bkColor << 4));		
 			t1 = clock();
 			while (inSymb != symb)
 			{
