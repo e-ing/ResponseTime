@@ -5,6 +5,7 @@
 #include <Windows.h>
 
 #include <iostream>
+#include <sstream> 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +14,6 @@
 
 
 using namespace std;
-
 
 static void NormalText(const char* str = NULL)
 {
@@ -68,6 +68,119 @@ void SetXY(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
 
+
+//Abstract_oString& Abstract_oString::operator << (const string str)
+//{
+////	if( !str.empty() ) 
+////		bigBuff.push_back(str);
+////	if( !bigBuff.empty() )
+////		if( cashBf.empty() )
+////		{
+////			list<string>::iterator it = bigBuff.begin();
+////			cashBf = *it;
+////			bigBuff.pop_front();
+////			cashBf = PushBuffer(cashBf);
+////		}
+//	return *this;
+//}
+
+
+class TeddyStr
+{
+private:
+	unsigned int sz, pos;
+	char* strVulgaris;
+
+public:
+	TeddyStr() : sz(0), pos(0), strVulgaris(NULL) { }
+	TeddyStr(const char* str) :
+	sz( strlen(str) + 1 ),
+	pos (0)	
+	{
+		strVulgaris = new char[sz];
+		for (int i = sz - 1; i >= 0; --i)
+			strVulgaris[i] = str[i];
+	}
+//Discard n elements from the beginning of the string 
+	void CutOff ( unsigned int n )
+	{ 	
+		n = (n > sz) ? sz : n;
+		sz -= n;
+		pos += n;
+		strVulgaris += pos;
+	}
+	unsigned int Size() { return sz; }
+	bool NotEpty() { return (sz > 0); }
+	bool Epty() { return (sz == 0); }
+	operator const char* ()
+	{
+		return strVulgaris;
+	}
+	//TeddyStr& operator << (const char* str);
+	//TeddyStr& operator << (int);
+	//TeddyStr& operator << (unsigned long);
+	//TeddyStr& operator << (double);
+	//TeddyStr& operator << (bool);
+	~TeddyStr() {}
+};
+
+
+
+//class TeddyStr
+//{
+//private:
+//	unsigned int sz;
+//	const char* strVulgaris;
+//	vector <char> buff;
+//public:
+//	TeddyStr() : sz(0), strVulgaris(NULL) { buff.clear(); }
+//	TeddyStr(const char* str)
+//	{
+//		sz = strlen(str) + 1;
+//		buff.resize(sz);
+//		for (int i = sz - 1; i >= 0; --i)
+//			buff[i] = str[i];
+//		strVulgaris = buff.data();
+//	}
+//	//Discard n elements from the beginning of the string 
+//	void CutOff(unsigned int n)
+//	{
+//		vector<char>::iterator it = buff.begin();
+//		while ((n-- > 0) && (it != buff.end()))
+//		{
+//			buff.erase(it);
+//			it = buff.begin();
+//		}
+//		sz = buff.size();
+//		strVulgaris = buff.data();
+//	}
+//	unsigned int Size() { return sz; }
+//	bool NotEpty() { return (sz > 0); }
+//	bool Epty() { return (sz == 0); }
+//	operator const char* ()
+//	{
+//		return strVulgaris;
+//	}
+//	//TeddyStr& operator << (const char* str);
+//	//TeddyStr& operator << (int);
+//	//TeddyStr& operator << (unsigned long);
+//	//TeddyStr& operator << (double);
+//	//TeddyStr& operator << (bool);
+//	~TeddyStr() {}
+//};
+
+unsigned int rndR(unsigned int cycles)
+{
+	unsigned int ret = rand();
+	cout << cycles << "---" << endl;
+	int i = cycles;
+	while (--i > 0)
+	{
+		ret = rand();
+	}
+	return ret;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -80,6 +193,65 @@ int _tmain(int argc, _TCHAR* argv[])
 	//fontInfo.dwFontSize.Y = 24; // Размер (в логических единицах)
 
 	//SetCurrentConsoleFontEx(hConsole, TRUE, &fontInfo); // Установить новый
+
+	TeddyStr first("1234567890++Hello Word++qwertyuiop");
+	cout <<  first << "szFirst = " << first.Size() << endl;
+	char cpStr[64];
+	char* ptr = cpStr;
+	unsigned int cutSz = 0;
+	unsigned int rep, temp32;
+	cout << "enter any number ";
+	cin >> rep;
+	while (--rep > 0)
+	{
+		temp32 = rand();
+	}
+	rep *= temp32;
+	rep &= 0xff;
+	cout << first << "szFirst = " << first.Size() << endl;
+	while (first.Size() > 0)
+	{
+		cutSz = rndR(rep) % 5 + 1;
+		memcpy(ptr, first, cutSz);
+		*(ptr + cutSz) = 0;
+		ptr += cutSz;
+		first.CutOff(cutSz);
+		cout << cpStr << "===" << first << " sz=" << cutSz << endl;
+	}
+
+	first.CutOff(5);
+	const char* vlSt = first;
+	cout << first << endl;
+	cout << vlSt << endl;
+	while (true);
+
+
+	string fS;
+	ostringstream ossss ;
+	char xStUn[] = "==Hello Word!==";
+	char xStUn1[] = "Yes";
+	int iUn = 389;
+	double zzzz = 3.14;
+	fS = xStUn;
+	cout <<  fS  << endl;
+	ossss << iUn;
+	fS = ossss.str();
+	cout << fS << endl;
+
+
+	ossss << zzzz;
+	
+	fS = xStUn1;
+	cout << fS << endl;
+	
+	bool bbb = false;
+	ossss.flush();
+	ossss.clear();
+	ossss << bbb;
+	fS = ossss.str();
+	cout << fS << endl;
+
+	while (true);
 	clock_t t1 = clock(); 
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
