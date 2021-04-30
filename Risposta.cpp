@@ -88,26 +88,105 @@ void SetXY(int x, int y)
 class TeddyStr
 {
 private:
-	unsigned int sz, pos;
+	unsigned int sz;// , pos;
 	char* strVulgaris;
-
+	char* str0;
 public:
-	TeddyStr() : sz(0), pos(0), strVulgaris(NULL) { }
-	TeddyStr(const char* str) :
-	sz( strlen(str) + 1 ),
-	pos (0)	
+	TeddyStr() : sz(0)
 	{
-		strVulgaris = new char[sz];
+		strVulgaris = new char[1];
+		strVulgaris[0] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(const char* str) :
+	sz( strlen(str) + 1 )
+	{
+		strVulgaris = new char[sz + 1];
 		for (int i = sz - 1; i >= 0; --i)
 			strVulgaris[i] = str[i];
+		strVulgaris[sz] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(int val)
+	{
+		char txV[16];
+		_itoa_s(val, txV, 10);
+		sz = strlen(txV) + 1;
+		strVulgaris = new char[sz + 1];
+		for (int i = sz - 1; i >= 0; --i)
+			strVulgaris[i] = txV[i];
+		strVulgaris[sz] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(unsigned long val) 
+	{
+		char txV[16];
+		_itoa_s(val, txV, 16);
+		sz = strlen(txV) + 1;
+			strVulgaris = new char[sz + 1];
+		for (int i = sz - 1; i >= 0; --i)
+			strVulgaris[i] = txV[i];
+		strVulgaris[sz] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(double val)
+	{
+		char txV[32];
+		sprintf_s(txV, "%.4f", val);
+		sz = strlen(txV) + 1;
+		strVulgaris = new char[sz + 1];
+		for (int i = sz - 1; i >= 0; --i)
+			strVulgaris[i] = txV[i];
+		strVulgaris[sz] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(bool val)
+	{
+		const char TX_TR[] = "TRUE";
+		const char TX_FL[] = "FALSE";
+		const char* ptr = val ? TX_TR : TX_FL;
+		sz = strlen(ptr) + 1;
+		strVulgaris = new char[sz + 1];
+		for (int i = sz - 1; i >= 0; --i)
+			strVulgaris[i] = ptr[i];
+		strVulgaris[sz] = 0;
+		str0 = strVulgaris;
+	}
+
+	TeddyStr(const TeddyStr& any)
+	{
+		sz = any.sz;
+		strVulgaris = new char[sz + 1];
+		str0 = strVulgaris;
+		for (int i = sz; i >= 0; --i)
+			strVulgaris[i] = any.strVulgaris[i];
+	}
+
+	TeddyStr& operator = (const TeddyStr& any)
+	{
+		if (str0 != nullptr)
+			delete[] str0;
+		sz = any.sz;
+		strVulgaris = new char[sz + 1];
+		for (int i = sz; i >= 0; --i)
+			strVulgaris[i] = any.strVulgaris[i];
+		str0 = strVulgaris;
+		return *this;
 	}
 //Discard n elements from the beginning of the string 
-	void CutOff ( unsigned int n )
+	void CutOff ( unsigned int nnn )
 	{ 	
-		n = (n > sz) ? sz : n;
-		sz -= n;
-		pos += n;
-		strVulgaris += pos;
+		if (sz > 0)
+		{
+			nnn = (nnn > sz)? sz : nnn;
+			sz -= nnn;
+			strVulgaris += nnn;
+		}
 	}
 	unsigned int Size() { return sz; }
 	bool NotEpty() { return (sz > 0); }
@@ -116,12 +195,11 @@ public:
 	{
 		return strVulgaris;
 	}
-	//TeddyStr& operator << (const char* str);
-	//TeddyStr& operator << (int);
-	//TeddyStr& operator << (unsigned long);
-	//TeddyStr& operator << (double);
-	//TeddyStr& operator << (bool);
-	~TeddyStr() {}
+
+	~TeddyStr() 
+	{
+		delete[] str0;
+	}
 };
 
 
@@ -196,6 +274,20 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	TeddyStr first("1234567890++Hello Word++qwertyuiop");
 	cout <<  first << "szFirst = " << first.Size() << endl;
+	TeddyStr second(first);
+	TeddyStr t3("abc");
+	TeddyStr t4("xyz");
+	second = t3;
+	cout << second << endl;
+	t3 = t4 = first;
+	cout << t3 << "::" << t4 << "::" << first << endl;
+	TeddyStr t5 = second;
+	cout << t5 << endl;
+	t5 = second = t3;
+	TeddyStr tInt(564);
+	TeddyStr tFl(9.056);
+	TeddyStr tBoo(false);
+	cout << tInt << "::" << tFl << "::" << tBoo << endl;
 	char cpStr[64];
 	char* ptr = cpStr;
 	unsigned int cutSz = 0;
@@ -208,15 +300,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	rep *= temp32;
 	rep &= 0xff;
-	cout << first << "szFirst = " << first.Size() << endl;
-	while (first.Size() > 0)
+	cout << second << "szSecond = " << second.Size() << endl;
+	while (second.Size() > 0)
 	{
 		cutSz = rndR(rep) % 5 + 1;
-		memcpy(ptr, first, cutSz);
+		memcpy(ptr, second, cutSz);
 		*(ptr + cutSz) = 0;
 		ptr += cutSz;
-		first.CutOff(cutSz);
-		cout << cpStr << "===" << first << " sz=" << cutSz << endl;
+		second.CutOff(cutSz);
+		cout << cpStr << "===" << second << " sz=" << cutSz << endl;
+		Sleep(1000);
 	}
 
 	first.CutOff(5);
